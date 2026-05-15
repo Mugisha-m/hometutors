@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-white text-charcoal font-sans;
+}
+
+button {
+  @apply transition-all duration-150 ease-in-out;
+}
+
+input, textarea, select {
+  @apply border border-slate-200 rounded-lg px-4 py-3 bg-white focus:border-turquoise focus:outline-none;
+}

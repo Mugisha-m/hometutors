@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  TUTOR
+  RECRUITER
+  ADMIN
+}
+
+model User {
+  id            String           @id @default(cuid())
+  email         String?          @unique(map: "User_email_key")
+  phone         String           @unique
+  password      String
+  role          UserRole         @default(RECRUITER)
+  emailVerified Boolean          @default(false)
+  adminApproved Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  tutorProfile  TutorProfile?
+  recruiterProfile RecruiterProfile?
+  messagesSent  Message[]        @relation("sentMessages")
+  messagesReceived Message[]     @relation("receivedMessages")
+  notifications Notification[]
+  payments      Payment[]
+}
+
+model TutorProfile {
+  id             String         @id @default(cuid())
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String         @unique
+  displayName    String
+  skills         String
+  diploma        String
+  certificates   String
+  bio            String
+  profilePicture String?
+  contactPhone   String?
+  contactEmail   String?
+  documents      Document[]
+  verified       Boolean        @default(false)
+  weeklyActivities WeeklyActivity[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model RecruiterProfile {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  companyName String?
+  fullName    String?
+  approved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WeeklyActivity {
+  id        String   @id @default(cuid())
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id])
+  tutorId   String
+  weekStart DateTime
+  active    Boolean
+  createdAt DateTime @default(now())
+
+  @@unique([tutorId, weekStart])
+}
+
+model Document {
+  id             String       @id @default(cuid())
+  tutor          TutorProfile @relation(fields: [tutorId], references: [id])
+  tutorId        String
+  title          String
+  url            String
+  containsContact Boolean     @default(false)
+  uploadedAt     DateTime     @default(now())
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  sender      User     @relation("sentMessages", fields: [senderId], references: [id])
+  senderId    String
+  receiver    User     @relation("receivedMessages", fields: [receiverId], references: [id])
+  receiverId  String
+  subject     String
+  body        String
+  createdAt   DateTime @default(now())
+  read        Boolean  @default(false)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String
+  message   String
+  type      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  amount        Float
+  description   String
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
