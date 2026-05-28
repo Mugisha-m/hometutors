@@ -1,0 +1,275 @@
+/* =============================================================
+   Chatbot.css — HomeTutors AI Chatbot Styles
+   Color scheme: Blue, Green, White
+   All selectors scoped under .chat-container
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   CHAT CONTAINER
+   The main card that wraps the entire chatbot UI
+   ------------------------------------------------------------- */
+.chat-container {
+  width: 420px;
+  max-width: 100vw;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(30, 136, 229, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.chat-container *,
+.chat-container *::before,
+.chat-container *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* -------------------------------------------------------------
+   HEADER
+   Top bar with branding — gradient from blue to green
+   ------------------------------------------------------------- */
+.chat-container .chat-header {
+  background: linear-gradient(90deg, #1e88e5, #43a047);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-container .chat-header .bot-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.chat-container .chat-header .header-text h1 {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.chat-container .chat-header .header-text p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* -------------------------------------------------------------
+   CHAT BOX
+   Scrollable area where messages appear
+   ------------------------------------------------------------- */
+.chat-container .chat-box {
+  height: 420px;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f9fffe;
+}
+
+@media (max-width: 480px) {
+  .chat-container {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .chat-container .chat-box {
+    flex: 1;
+    height: auto;
+  }
+}
+
+.chat-container .chat-box::-webkit-scrollbar {
+  width: 5px;
+}
+.chat-container .chat-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-container .chat-box::-webkit-scrollbar-thumb {
+  background: #b2dfdb;
+  border-radius: 10px;
+}
+
+/* -------------------------------------------------------------
+   MESSAGE BUBBLES
+   Each message is a row with an avatar and a bubble
+   ------------------------------------------------------------- */
+.chat-container .message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  animation: msg-in 0.2s ease;
+}
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-container .message-row.user {
+  flex-direction: row-reverse;
+}
+
+.chat-container .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.chat-container .avatar.ai {
+  background: linear-gradient(135deg, #1e88e5, #43a047);
+}
+
+.chat-container .avatar.user {
+  background: #43a047;
+}
+
+.chat-container .bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.chat-container .bubble.ai {
+  background: #ffffff;
+  border: 1px solid #e3f2fd;
+  border-left: 3px solid #1e88e5;
+  color: #263238;
+  border-radius: 0 16px 16px 16px;
+}
+
+.chat-container .bubble.user {
+  background: linear-gradient(135deg, #43a047, #66bb6a);
+  color: #ffffff;
+  border-radius: 16px 0 16px 16px;
+}
+
+/* Markdown content inside AI bubble */
+.chat-container .bubble.ai p { margin: 4px 0; }
+.chat-container .bubble.ai ul,
+.chat-container .bubble.ai ol { padding-left: 18px; margin: 4px 0; }
+.chat-container .bubble.ai code {
+  background: #e8f5e9;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1b5e20;
+}
+.chat-container .bubble.ai pre {
+  background: #e8f5e9;
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+.chat-container .bubble.ai strong { color: #1e88e5; }
+
+/* -------------------------------------------------------------
+   THINKING INDICATOR
+   Animated dots shown while waiting for AI response
+   ------------------------------------------------------------- */
+.chat-container .thinking {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  align-items: center;
+}
+
+.chat-container .thinking span {
+  width: 7px;
+  height: 7px;
+  background: #1e88e5;
+  border-radius: 50%;
+  animation: chatbot-bounce 1.2s infinite ease-in-out;
+}
+
+.chat-container .thinking span:nth-child(2) { animation-delay: 0.2s; }
+.chat-container .thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes chatbot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* -------------------------------------------------------------
+   INPUT AREA
+   Bottom bar with text input and send button
+   ------------------------------------------------------------- */
+.chat-container .input-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-top: 1px solid #e0f2f1;
+  background: #ffffff;
+}
+
+.chat-container .chat-input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1.5px solid #b2dfdb;
+  border-radius: 24px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  color: #263238;
+  font-family: inherit;
+}
+
+.chat-container .chat-input:focus {
+  border-color: #1e88e5;
+}
+
+.chat-container .chat-input::placeholder {
+  color: #90a4ae;
+}
+
+.chat-container .send-btn {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #1e88e5, #43a047);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s, transform 0.1s;
+  flex-shrink: 0;
+}
+
+.chat-container .send-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chat-container .send-btn:hover { opacity: 0.9; }
+.chat-container .send-btn:active { transform: scale(0.93); }
+
+.chat-container .send-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: #ffffff;
+}
