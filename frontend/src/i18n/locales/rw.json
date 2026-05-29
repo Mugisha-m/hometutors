@@ -130,7 +130,12 @@
     "documents": "Inyandiko",
     "documentHidden": "Bihishwe kugeza yemejwe",
     "documentAvailable": "Bihari",
-    "viewDocument": "Reba Inyandiko"
+    "viewDocument": "Reba Inyandiko",
+    "location": "Aho atuye",
+    "district": "Akarere",
+    "sector": "Umurenge",
+    "city": "Umujyi",
+    "locationInfo": "Amakuru y'aho atuye"
   },
   "tutorList": {
     "title": "Shakisha Abarimu",
@@ -139,6 +144,8 @@
     "refresh": "Hindura",
     "searchLabel": "Shakisha ku izina cyangwa ubuhanga",
     "searchPlaceholder": "Shakisha abarimu...",
+    "searchLocationLabel": "Shakisha aho atuye",
+    "searchLocationPlaceholder": "Akarere, Umurenge, cyangwa Umujyi...",
     "filterActive": "Bakora iki cyumweru",
     "filterVerified": "Bahamijwe gusa",
     "empty": "Nta barimu bashakishwa. Gerageza guhindura ibyifuzo.",
@@ -178,5 +185,12 @@
     "switch": "Hindura Ururimi",
     "english": "Icyongereza",
     "kinyarwanda": "Kinyarwanda"
+  },
+  "footer": {
+    "desc": "Huzuza abarimu bafite ubushobozi n'abakoresha abakozi mu buryo bwizewe kandi bwihuse mu Rwanda.",
+    "links": "Ihuza ry'ibanze",
+    "contact": "Twandikire",
+    "rights": "Uburenganzira bwose burasigasirwa.",
+    "tagline": "Guteza imbere uburezi, guhuza ku nshuro imwe."
   }
 }

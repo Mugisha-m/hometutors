@@ -43,6 +43,9 @@ model TutorProfile {
   profilePicture String?
   contactPhone   String?
   contactEmail   String?
+  district       String?
+  sector         String?
+  city           String?
   documents      Document[]
   verified       Boolean        @default(false)
   weeklyActivities WeeklyActivity[]

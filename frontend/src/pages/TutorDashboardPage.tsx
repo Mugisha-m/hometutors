@@ -14,6 +14,9 @@ interface TutorProfile {
   profilePicture?: string;
   contactPhone?: string;
   contactEmail?: string;
+  district?: string;
+  sector?: string;
+  city?: string;
   verified: boolean;
   documents: any[];
   weeklyActivities: any[];
@@ -31,7 +34,10 @@ const TutorDashboardPage = () => {
     certificates: "",
     bio: "",
     contactPhone: "",
-    contactEmail: ""
+    contactEmail: "",
+    district: "",
+    sector: "",
+    city: ""
   });
   const [documentForm, setDocumentForm] = useState({ title: "", url: "", containsContact: false });
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -61,7 +67,10 @@ const TutorDashboardPage = () => {
         certificates: response.data.data.certificates,
         bio: response.data.data.bio,
         contactPhone: response.data.data.contactPhone || "",
-        contactEmail: response.data.data.contactEmail || ""
+        contactEmail: response.data.data.contactEmail || "",
+        district: response.data.data.district || "",
+        sector: response.data.data.sector || "",
+        city: response.data.data.city || ""
       });
       setActiveThisWeek(response.data.data.weeklyActivities.some((activity: any) => activity.active));
     }).catch(() => navigate("/login"));
@@ -295,6 +304,33 @@ const TutorDashboardPage = () => {
               value={formData.contactEmail}
               onChange={(e) => setFormData(prev => ({ ...prev, contactEmail: e.target.value }))}
               disabled={!editing}
+            />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-charcoal">District</span>
+            <input
+              value={formData.district}
+              onChange={(e) => setFormData(prev => ({ ...prev, district: e.target.value }))}
+              disabled={!editing}
+              placeholder="e.g. Nyarugenge"
+            />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-charcoal">Sector</span>
+            <input
+              value={formData.sector}
+              onChange={(e) => setFormData(prev => ({ ...prev, sector: e.target.value }))}
+              disabled={!editing}
+              placeholder="e.g. Kimisagara"
+            />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-charcoal">City</span>
+            <input
+              value={formData.city}
+              onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+              disabled={!editing}
+              placeholder="e.g. Kigali"
             />
           </label>
         </div>

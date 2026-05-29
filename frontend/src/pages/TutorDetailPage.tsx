@@ -10,6 +10,7 @@ interface TutorDetail {
   certificates: string; bio: string; profilePicture?: string;
   verified: boolean; contactPhone: string | null; contactEmail: string | null;
   documents: DocumentItem[]; activeThisWeek: boolean;
+  district?: string | null; sector?: string | null; city?: string | null;
 }
 
 const FALLBACK = "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80";
@@ -71,6 +72,11 @@ const TutorDetailPage = () => {
                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tutor.verified ? "bg-turquoise text-white" : "bg-slate-600 text-slate-200"}`}>
                   {tutor.verified ? t("tutorDetail.adminVerified") : t("tutorDetail.awaitingVerification")}
                 </span>
+                {(tutor.district || tutor.sector || tutor.city) && (
+                  <span className="rounded-full bg-charcoal/80 text-slate-200 px-3 py-1 text-xs font-semibold border border-white/10 flex items-center gap-1">
+                    📍 {tutor.district ? `${tutor.district}, ` : ""}{tutor.sector ? `${tutor.sector}, ` : ""}{tutor.city || ""}
+                  </span>
+                )}
               </div>
             </div>
             {/* Avatar */}
@@ -136,6 +142,25 @@ const TutorDetailPage = () => {
 
         {/* Right — contact */}
         <div className="space-y-6">
+          {/* Location details card */}
+          <div className="rounded-[32px] bg-white p-8 shadow-sm">
+            <h2 className="mb-5 text-xl font-semibold text-charcoal">{t("tutorDetail.location")}</h2>
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.district")}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.district || "—"}</p>
+              </div>
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.sector")}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.sector || "—"}</p>
+              </div>
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.city")}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.city || "—"}</p>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-[32px] bg-white p-8 shadow-sm">
             <h2 className="mb-5 text-xl font-semibold text-charcoal">{t("tutorDetail.contactAccess")}</h2>
             <div className="space-y-4">

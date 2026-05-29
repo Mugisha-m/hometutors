@@ -14,77 +14,81 @@ import LoginPage from "./pages/LoginPage";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatWidget from "./components/ChatWidget";
+import Footer from "./components/Footer";
 
 function App() {
   return (
-    <div className="min-h-screen bg-slate-50 text-charcoal">
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-4 py-6 md:px-6">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tutors" element={<TutorListPage />} />
-          <Route path="/tutors/:id" element={<TutorDetailPage />} />
-          <Route
-            path="/dashboard/tutor"
-            element={
-              <ProtectedRoute roles={["TUTOR"]}>
-                <TutorDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard/recruiter"
-            element={
-              <ProtectedRoute roles={["RECRUITER"]}>
-                <RecruiterDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/messages"
-            element={
-              <ProtectedRoute>
-                <MessagesPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute roles={["ADMIN"]}>
-                <AdminDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/approvals"
-            element={
-              <ProtectedRoute roles={["ADMIN"]}>
-                <AdminApprovalsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <ProtectedRoute roles={["ADMIN"]}>
-                <AdminUsersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/payments"
-            element={
-              <ProtectedRoute roles={["ADMIN"]}>
-                <AdminPaymentsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
+    <div className="min-h-screen bg-slate-50 text-charcoal flex flex-col justify-between">
+      <div>
+        <Navbar />
+        <main className="mx-auto max-w-7xl px-4 py-6 md:px-6">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/tutors" element={<TutorListPage />} />
+            <Route path="/tutors/:id" element={<TutorDetailPage />} />
+            <Route
+              path="/dashboard/tutor"
+              element={
+                <ProtectedRoute roles={["TUTOR"]}>
+                  <TutorDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/recruiter"
+              element={
+                <ProtectedRoute roles={["RECRUITER"]}>
+                  <RecruiterDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <MessagesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute roles={["ADMIN"]}>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/approvals"
+              element={
+                <ProtectedRoute roles={["ADMIN"]}>
+                  <AdminApprovalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute roles={["ADMIN"]}>
+                  <AdminUsersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/payments"
+              element={
+                <ProtectedRoute roles={["ADMIN"]}>
+                  <AdminPaymentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+      </div>
+      <Footer />
       <ChatWidget />
     </div>
   );

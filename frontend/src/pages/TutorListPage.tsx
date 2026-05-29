@@ -13,6 +13,9 @@ interface TutorSummary {
   profilePicture?: string;
   verified: boolean;
   activeThisWeek: boolean;
+  district?: string;
+  sector?: string;
+  city?: string;
 }
 
 const FALLBACK = "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80";
@@ -21,6 +24,7 @@ const TutorListPage = () => {
   const { t } = useTranslation();
   const [tutors, setTutors] = useState<TutorSummary[]>([]);
   const [query, setQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
   const [activeOnly, setActiveOnly] = useState(false);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,6 +36,7 @@ const TutorListPage = () => {
     try {
       const params: Record<string, unknown> = {};
       if (query.trim()) params.q = query.trim();
+      if (locationQuery.trim()) params.location = locationQuery.trim();
       if (activeOnly) params.active = true;
       if (verifiedOnly) params.verified = true;
       const response = await axios.get("http://localhost:4000/api/tutors", { params });
@@ -43,7 +48,7 @@ const TutorListPage = () => {
     }
   };
 
-  useEffect(() => { loadTutors(); }, [query, activeOnly, verifiedOnly]);
+  useEffect(() => { loadTutors(); }, [query, locationQuery, activeOnly, verifiedOnly]);
 
   return (
     <section className="space-y-8">
@@ -59,10 +64,14 @@ const TutorListPage = () => {
           <PrimaryButton label={t("tutorList.refresh")} onClick={loadTutors} />
         </div>
 
-        <div className="mt-8 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+        <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_1fr_1fr]">
           <label className="space-y-2">
             <span className="text-sm font-medium text-charcoal">{t("tutorList.searchLabel")}</span>
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("tutorList.searchPlaceholder")} className="w-full" />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-charcoal">{t("tutorList.searchLocationLabel")}</span>
+            <input value={locationQuery} onChange={(e) => setLocationQuery(e.target.value)} placeholder={t("tutorList.searchLocationPlaceholder")} className="w-full" />
           </label>
           <div className="flex items-end gap-3">
             <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-charcoal hover:border-turquoise">
@@ -105,6 +114,12 @@ const TutorListPage = () => {
 
                 {/* Body */}
                 <div className="p-6 space-y-3">
+                  {(tutor.district || tutor.sector || tutor.city) && (
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+                      <span>📍</span>
+                      <span className="truncate">{tutor.district ? `${tutor.district}, ` : ""}{tutor.sector ? `${tutor.sector}, ` : ""}{tutor.city || ""}</span>
+                    </div>
+                  )}
                   <p className="text-sm text-slate-500 line-clamp-2">{tutor.bio}</p>
                   <div className="flex flex-wrap gap-2">
                     {tutor.skills.split(",").slice(0, 3).map((s) => s.trim()).filter(Boolean).map((skill) => (

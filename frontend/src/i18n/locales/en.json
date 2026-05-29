@@ -126,7 +126,12 @@
     "documents": "Documents",
     "documentHidden": "Hidden until approved",
     "documentAvailable": "Available",
-    "viewDocument": "View Document"
+    "viewDocument": "View Document",
+    "location": "Location",
+    "district": "District",
+    "sector": "Sector",
+    "city": "City",
+    "locationInfo": "Location Information"
   },
   "tutorList": {
     "title": "Browse Tutors",
@@ -135,6 +140,8 @@
     "refresh": "Refresh",
     "searchLabel": "Search by name or skills",
     "searchPlaceholder": "Search tutors...",
+    "searchLocationLabel": "Search by Location",
+    "searchLocationPlaceholder": "District, sector, or city...",
     "filterActive": "Active this week",
     "filterVerified": "Verified only",
     "empty": "No tutors found. Try adjusting your filters.",
@@ -174,5 +181,12 @@
     "switch": "Switch Language",
     "english": "English",
     "kinyarwanda": "Kinyarwanda"
+  },
+  "footer": {
+    "desc": "Connecting qualified tutors with recruiters securely and efficiently across Rwanda.",
+    "links": "Quick Links",
+    "contact": "Contact Us",
+    "rights": "All rights reserved.",
+    "tagline": "Empowering education, one match at a time."
   }
 }

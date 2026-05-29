@@ -6,9 +6,56 @@ import { sendError, sendSuccess, AuthRequest } from "../utils";
 const router = Router();
 
 router.get("/", async (req, res) => {
+  const { q, location, active, verified } = req.query;
+
+  const where: any = {};
+
+  if (verified === "true") {
+    where.verified = true;
+  }
+
+  if (active === "true") {
+    where.weeklyActivities = {
+      some: {
+        active: true
+      }
+    };
+  }
+
+  const andConditions: any[] = [];
+
+  if (q && typeof q === "string" && q.trim()) {
+    const searchStr = q.trim();
+    andConditions.push({
+      OR: [
+        { displayName: { contains: searchStr, mode: "insensitive" } },
+        { skills: { contains: searchStr, mode: "insensitive" } },
+        { bio: { contains: searchStr, mode: "insensitive" } },
+        { diploma: { contains: searchStr, mode: "insensitive" } }
+      ]
+    });
+  }
+
+  if (location && typeof location === "string" && location.trim()) {
+    const locStr = location.trim();
+    andConditions.push({
+      OR: [
+        { district: { contains: locStr, mode: "insensitive" } },
+        { sector: { contains: locStr, mode: "insensitive" } },
+        { city: { contains: locStr, mode: "insensitive" } }
+      ]
+    });
+  }
+
+  if (andConditions.length > 0) {
+    where.AND = andConditions;
+  }
+
   const tutors = await prisma.tutorProfile.findMany({
+    where,
     include: { user: true, weeklyActivities: true }
   });
+
   return sendSuccess(res, tutors.map((tutor) => ({
     id: tutor.id,
     displayName: tutor.displayName,
@@ -18,6 +65,9 @@ router.get("/", async (req, res) => {
     bio: tutor.bio,
     profilePicture: tutor.profilePicture,
     verified: tutor.verified,
+    district: tutor.district,
+    sector: tutor.sector,
+    city: tutor.city,
     activeThisWeek: tutor.weeklyActivities.some((a) => a.active)
   })));
 });
@@ -35,10 +85,10 @@ router.get("/profile/me", authenticate, async (req: AuthRequest, res) => {
 
 router.put("/profile", authenticate, async (req: AuthRequest, res) => {
   if (req.user.role !== "TUTOR") return sendError(res, "Only tutors can update their profile", 403);
-  const { displayName, skills, diploma, certificates, bio, profilePicture, contactPhone, contactEmail } = req.body;
+  const { displayName, skills, diploma, certificates, bio, profilePicture, contactPhone, contactEmail, district, sector, city } = req.body;
   const updatedProfile = await prisma.tutorProfile.update({
     where: { userId: req.user.id },
-    data: { displayName, skills, diploma, certificates, bio, profilePicture, contactPhone, contactEmail }
+    data: { displayName, skills, diploma, certificates, bio, profilePicture, contactPhone, contactEmail, district, sector, city }
   });
   return sendSuccess(res, updatedProfile);
 });
@@ -93,6 +143,9 @@ router.get("/:id", authenticate, async (req: AuthRequest, res) => {
     bio: tutor.bio,
     profilePicture: tutor.profilePicture,
     verified: tutor.verified,
+    district: tutor.district,
+    sector: tutor.sector,
+    city: tutor.city,
     contactPhone: canSeeContact ? tutor.contactPhone : null,
     contactEmail: canSeeContact ? tutor.contactEmail : null,
     documents: tutor.documents.map((doc) => ({
