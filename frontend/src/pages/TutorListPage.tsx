@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import PrimaryButton from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
@@ -22,11 +22,12 @@ const FALLBACK = "https://images.unsplash.com/photo-1544717305-2782549b5136?auto
 
 const TutorListPage = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tutors, setTutors] = useState<TutorSummary[]>([]);
-  const [query, setQuery] = useState("");
-  const [locationQuery, setLocationQuery] = useState("");
-  const [activeOnly, setActiveOnly] = useState(false);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const [locationQuery, setLocationQuery] = useState(() => searchParams.get("location") ?? "");
+  const [activeOnly, setActiveOnly] = useState(() => searchParams.get("active") === "true");
+  const [verifiedOnly, setVerifiedOnly] = useState(() => searchParams.get("verified") === "true");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -48,7 +49,15 @@ const TutorListPage = () => {
     }
   };
 
-  useEffect(() => { loadTutors(); }, [query, locationQuery, activeOnly, verifiedOnly]);
+  useEffect(() => {
+    const nextParams = new URLSearchParams();
+    if (query.trim()) nextParams.set("q", query.trim());
+    if (locationQuery.trim()) nextParams.set("location", locationQuery.trim());
+    if (activeOnly) nextParams.set("active", "true");
+    if (verifiedOnly) nextParams.set("verified", "true");
+    setSearchParams(nextParams, { replace: true });
+    loadTutors();
+  }, [query, locationQuery, activeOnly, verifiedOnly]);
 
   return (
     <section className="space-y-8">
@@ -116,7 +125,7 @@ const TutorListPage = () => {
                 <div className="p-6 space-y-3">
                   {(tutor.district || tutor.sector || tutor.city) && (
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400">
-                      <span>📍</span>
+                      <span>Location</span>
                       <span className="truncate">{tutor.district ? `${tutor.district}, ` : ""}{tutor.sector ? `${tutor.sector}, ` : ""}{tutor.city || ""}</span>
                     </div>
                   )}
@@ -131,7 +140,7 @@ const TutorListPage = () => {
                       {tutor.verified ? t("tutorList.verified") : t("tutorList.pending")}
                     </span>
                     <Link to={`/tutors/${tutor.id}`} className="text-sm font-semibold text-turquoise hover:underline">
-                      {t("tutorList.viewProfile")} →
+                      {t("tutorList.viewProfile")} -&gt;
                     </Link>
                   </div>
                 </div>

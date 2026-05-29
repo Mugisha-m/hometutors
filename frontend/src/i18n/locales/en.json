@@ -36,7 +36,11 @@
     "signup": "Sign Up",
     "dashboard": "Dashboard",
     "messages": "Messages",
-    "admin": "Admin"
+    "admin": "Admin",
+    "tagline": "Tutor, recruiter, and admin portal",
+    "menu": "Menu",
+    "close": "Close",
+    "logout": "Logout"
   },
   "messages": {
     "title": "Messages",

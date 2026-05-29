@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PrimaryButton from "../components/PrimaryButton";
@@ -28,6 +28,7 @@ const RecruiterDashboardPage = () => {
     fullName: ""
   });
   const [paymentForm, setPaymentForm] = useState({ amount: "", description: "" });
+  const [searchForm, setSearchForm] = useState({ q: "", location: "", active: true, verified: false });
   const [toast, setToast] = useState("");
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
@@ -94,6 +95,16 @@ const RecruiterDashboardPage = () => {
     }
   };
 
+  const handleTutorSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (searchForm.q.trim()) params.set("q", searchForm.q.trim());
+    if (searchForm.location.trim()) params.set("location", searchForm.location.trim());
+    if (searchForm.active) params.set("active", "true");
+    if (searchForm.verified) params.set("verified", "true");
+    navigate(`/tutors?${params.toString()}`);
+  };
+
   if (!profile) {
     return <p className="text-slate-600">Loading dashboard…</p>;
   }
@@ -115,6 +126,52 @@ const RecruiterDashboardPage = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-[32px] bg-white p-8 shadow-sm lg:col-span-2">
+          <h2 className="mb-2 text-xl font-semibold text-charcoal">Find tutors by location</h2>
+          <p className="mb-6 text-sm text-slate-500">Search district, sector, or city and open matching tutor profiles.</p>
+          <form onSubmit={handleTutorSearch} className="grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-charcoal">Name or skill</span>
+              <input
+                value={searchForm.q}
+                onChange={(e) => setSearchForm(prev => ({ ...prev, q: e.target.value }))}
+                placeholder="Math, English, science..."
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-charcoal">Location</span>
+              <input
+                value={searchForm.location}
+                onChange={(e) => setSearchForm(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="Kigali, Gasabo, Kacyiru..."
+              />
+            </label>
+            <div className="flex flex-col justify-end gap-3">
+              <div className="flex gap-3">
+                <label className="flex items-center gap-2 text-sm text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={searchForm.active}
+                    onChange={(e) => setSearchForm(prev => ({ ...prev, active: e.target.checked }))}
+                    className="h-4 w-4 accent-turquoise"
+                  />
+                  Active
+                </label>
+                <label className="flex items-center gap-2 text-sm text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={searchForm.verified}
+                    onChange={(e) => setSearchForm(prev => ({ ...prev, verified: e.target.checked }))}
+                    className="h-4 w-4 accent-turquoise"
+                  />
+                  Verified
+                </label>
+              </div>
+              <PrimaryButton type="submit" label="Search Tutors" />
+            </div>
+          </form>
+        </div>
+
         <div className="rounded-[32px] bg-white p-8 shadow-sm">
           <h2 className="mb-6 text-xl font-semibold text-charcoal">Profile Information</h2>
           <div className="space-y-4">

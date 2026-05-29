@@ -74,7 +74,7 @@ const TutorDetailPage = () => {
                 </span>
                 {(tutor.district || tutor.sector || tutor.city) && (
                   <span className="rounded-full bg-charcoal/80 text-slate-200 px-3 py-1 text-xs font-semibold border border-white/10 flex items-center gap-1">
-                    📍 {tutor.district ? `${tutor.district}, ` : ""}{tutor.sector ? `${tutor.sector}, ` : ""}{tutor.city || ""}
+                    Location: {tutor.district ? `${tutor.district}, ` : ""}{tutor.sector ? `${tutor.sector}, ` : ""}{tutor.city || ""}
                   </span>
                 )}
               </div>
@@ -89,7 +89,7 @@ const TutorDetailPage = () => {
 
       <div className="grid gap-6 lg:grid-cols-3">
 
-        {/* Left — bio + skills */}
+        {/* Left: bio + skills */}
         <div className="space-y-6 lg:col-span-2">
           <div className="rounded-[32px] bg-white p-8 shadow-sm">
             <h2 className="mb-4 text-xl font-semibold text-charcoal">About</h2>
@@ -109,7 +109,7 @@ const TutorDetailPage = () => {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.diploma")}</p>
-                <p className="mt-1 text-slate-700">{tutor.diploma || "—"}</p>
+                <p className="mt-1 text-slate-700">{tutor.diploma || "-"}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.certificates")}</p>
@@ -125,7 +125,7 @@ const TutorDetailPage = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 {tutor.documents.map((doc) => (
                   <div key={doc.id} className="flex items-center gap-4 rounded-2xl border border-slate-200 p-4">
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xl">📄</div>
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-semibold text-slate-500">DOC</div>
                     <div className="min-w-0">
                       <p className="truncate font-medium text-charcoal">{doc.title}</p>
                       {doc.hidden
@@ -140,7 +140,7 @@ const TutorDetailPage = () => {
           )}
         </div>
 
-        {/* Right — contact */}
+        {/* Right: contact */}
         <div className="space-y-6">
           {/* Location details card */}
           <div className="rounded-[32px] bg-white p-8 shadow-sm">
@@ -148,15 +148,15 @@ const TutorDetailPage = () => {
             <div className="space-y-4">
               <div className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.district")}</p>
-                <p className="mt-1 font-semibold text-charcoal">{tutor.district || "—"}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.district || "-"}</p>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.sector")}</p>
-                <p className="mt-1 font-semibold text-charcoal">{tutor.sector || "—"}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.sector || "-"}</p>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.city")}</p>
-                <p className="mt-1 font-semibold text-charcoal">{tutor.city || "—"}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.city || "-"}</p>
               </div>
             </div>
           </div>
