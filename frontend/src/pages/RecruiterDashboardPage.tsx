@@ -27,10 +27,9 @@ const RecruiterDashboardPage = () => {
     companyName: "",
     fullName: ""
   });
-  const [paymentForm, setPaymentForm] = useState({
-    amount: "",
-    description: ""
-  });
+  const [paymentForm, setPaymentForm] = useState({ amount: "", description: "" });
+  const [toast, setToast] = useState("");
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   useEffect(() => {
     const token = localStorage.getItem("hometutors_token");
@@ -67,16 +66,15 @@ const RecruiterDashboardPage = () => {
   const handleProfileUpdate = async () => {
     const token = localStorage.getItem("hometutors_token");
     if (!token) return;
-
     try {
       const response = await axios.put("http://localhost:4000/api/recruiters/profile", formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(response.data.data);
       setEditing(false);
-      alert("Profile updated successfully!");
-    } catch (error) {
-      alert("Failed to update profile");
+      showToast("Profile updated successfully!");
+    } catch {
+      showToast("Failed to update profile");
     }
   };
 
@@ -90,9 +88,9 @@ const RecruiterDashboardPage = () => {
       });
       setPayments(prev => [response.data.data, ...prev]);
       setPaymentForm({ amount: "", description: "" });
-      alert("Payment recorded successfully!");
-    } catch (error) {
-      alert("Failed to record payment");
+      showToast("Payment recorded successfully!");
+    } catch {
+      showToast("Failed to record payment");
     }
   };
 
@@ -109,9 +107,11 @@ const RecruiterDashboardPage = () => {
             <h1 className="text-3xl font-bold text-charcoal">Welcome, {profile.fullName || "Recruiter"}</h1>
           </div>
           <div className="flex gap-3">
+            {editing && <button onClick={() => setEditing(false)} className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>}
             <PrimaryButton label={editing ? "Save Changes" : "Edit Profile"} onClick={editing ? handleProfileUpdate : () => setEditing(!editing)} />
           </div>
         </div>
+        {toast && <p className="mt-4 rounded-2xl bg-softgreen/10 px-4 py-2 text-sm font-medium text-softgreen">{toast}</p>}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

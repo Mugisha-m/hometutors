@@ -6,6 +6,8 @@ import tutorRoutes from "./routes/tutors";
 import recruiterRoutes from "./routes/recruiters";
 import adminRoutes from "./routes/admin";
 import messageRoutes from "./routes/messages";
+import chatRoutes from "./routes/chat";
+import uploadRoutes from "./routes/upload";
 
 dotenv.config();
 
@@ -21,5 +23,7 @@ app.use("/api/tutors", tutorRoutes);
 app.use("/api/recruiters", recruiterRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/upload", uploadRoutes);
 
 export default app;

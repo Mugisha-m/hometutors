@@ -17,15 +17,23 @@ router.get("/dashboard", async (_req, res) => {
 
 router.post("/approve-recruiter", async (req: AuthRequest, res) => {
   const { recruiterId } = req.body;
-  if (!recruiterId) {
-    return sendError(res, "Recruiter id is required");
-  }
-
+  if (!recruiterId) return sendError(res, "Recruiter id is required");
   const recruiter = await prisma.recruiterProfile.update({
     where: { id: recruiterId },
     data: { approved: true }
   });
   await prisma.user.update({ where: { id: recruiter.userId }, data: { adminApproved: true } });
+  return sendSuccess(res, recruiter);
+});
+
+router.post("/unapprove-recruiter", async (req: AuthRequest, res) => {
+  const { userId } = req.body;
+  if (!userId) return sendError(res, "userId is required");
+  const recruiter = await prisma.recruiterProfile.update({
+    where: { userId },
+    data: { approved: false }
+  });
+  await prisma.user.update({ where: { id: userId }, data: { adminApproved: false } });
   return sendSuccess(res, recruiter);
 });
 
@@ -167,6 +175,25 @@ router.get("/users", async (_req, res) => {
   });
 
   return sendSuccess(res, users);
+});
+
+router.delete("/users/:id", async (req: AuthRequest, res) => {
+  const { id } = req.params;
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) return sendError(res, "User not found", 404);
+  if (user.role === "ADMIN") return sendError(res, "Cannot delete admin", 403);
+  await prisma.user.delete({ where: { id } });
+  return sendSuccess(res, { message: "User deleted" });
+});
+
+router.patch("/payments/:id/status", async (req: AuthRequest, res) => {
+  const { status } = req.body;
+  if (!status) return sendError(res, "Status is required");
+  const payment = await prisma.payment.update({
+    where: { id: req.params.id },
+    data: { status }
+  });
+  return sendSuccess(res, payment);
 });
 
 export default router;

@@ -74,12 +74,18 @@ const MessagesPage = () => {
       try {
         const currentUserId = getUserId();
         const [messagesRes, notificationsRes, usersRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/messages/messages", {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get("http://localhost:4000/api/messages/notifications", {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
+          axios.get(
+            userRole === "ADMIN"
+              ? "http://localhost:4000/api/admin/messages"
+              : "http://localhost:4000/api/messages/messages",
+            { headers: { Authorization: `Bearer ${token}` } }
+          ),
+          axios.get(
+            userRole === "ADMIN"
+              ? "http://localhost:4000/api/admin/notifications"
+              : "http://localhost:4000/api/messages/notifications",
+            { headers: { Authorization: `Bearer ${token}` } }
+          ),
           axios.get("http://localhost:4000/api/auth/users", {
             headers: { Authorization: `Bearer ${token}` }
           })

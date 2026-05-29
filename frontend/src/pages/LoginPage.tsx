@@ -4,62 +4,72 @@ import axios from "axios";
 import PrimaryButton from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
 
+const PHOTO = "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80";
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ phone: "", password: "" });
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true); setError("");
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/login", { phone, password });
-      localStorage.setItem("hometutors_token", response.data.data.token);
+      const res = await axios.post("http://localhost:4000/api/auth/login", form);
+      localStorage.setItem("hometutors_token", res.data.data.token);
       window.dispatchEvent(new Event("authChange"));
-      const role = response.data.data.user.role;
-      if (role === "TUTOR") {
-        navigate("/dashboard/tutor");
-      } else if (role === "RECRUITER") {
-        navigate("/dashboard/recruiter");
-      } else if (role === "ADMIN") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      const role = res.data.data.user.role;
+      navigate(role === "ADMIN" ? "/admin" : role === "RECRUITER" ? "/dashboard/recruiter" : "/dashboard/tutor");
     } catch {
-      setError(t('login.error'));
+      setError(t("login.error"));
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <section className="mx-auto max-w-2xl space-y-6 rounded-[32px] bg-white p-8 shadow-lg">
-      <div>
-        <p className="text-sm uppercase tracking-[0.3em] text-turquoise">{t('login.title')}</p>
-        <h1 className="mt-3 text-3xl font-bold text-charcoal">{t('login.heading')}</h1>
-        <p className="mt-2 text-slate-500">{t('login.subtitle')}</p>
-      </div>
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-charcoal">{t('login.phone')}</span>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('login.phonePlaceholder')} />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-charcoal">{t('login.password')}</span>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('login.passwordPlaceholder')} />
-        </label>
-        {error && <p className="text-sm text-crimson">{error}</p>}
-        <div className="flex justify-end">
-          <PrimaryButton label={loading ? t('login.loggingIn') : t('login.loginButton')} type="submit" />
+    <div className="mx-auto max-w-4xl overflow-hidden rounded-[32px] bg-white shadow-xl">
+      <div className="grid lg:grid-cols-2">
+
+        {/* Photo side */}
+        <div className="relative hidden lg:block">
+          <img src={PHOTO} alt="tutoring" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-br from-charcoal/70 to-turquoise/40 p-10 flex flex-col justify-end">
+            <p className="text-2xl font-bold text-white">Welcome back to HomeTutors</p>
+            <p className="mt-2 text-sm text-white/70">Connect with qualified tutors across Rwanda.</p>
+          </div>
         </div>
-      </form>
-    </section>
+
+        {/* Form side */}
+        <div className="p-10 space-y-6">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-turquoise">{t("login.title")}</p>
+            <h1 className="mt-2 text-2xl font-bold text-charcoal">{t("login.heading")}</h1>
+            <p className="mt-1 text-sm text-slate-500">{t("login.subtitle")}</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-charcoal">{t("login.phone")}</span>
+              <input value={form.phone} onChange={(e) => setForm(p => ({ ...p, phone: e.target.value }))} placeholder={t("login.phonePlaceholder")} className="w-full" />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-charcoal">{t("login.password")}</span>
+              <input type="password" value={form.password} onChange={(e) => setForm(p => ({ ...p, password: e.target.value }))} placeholder={t("login.passwordPlaceholder")} className="w-full" />
+            </label>
+            {error && <p className="text-sm text-crimson">{error}</p>}
+            <PrimaryButton label={submitting ? t("login.loggingIn") : t("login.loginButton")} type="submit" disabled={submitting} className="w-full justify-center" />
+          </form>
+
+          <p className="text-center text-sm text-slate-500">
+            Don't have an account?{" "}
+            <a href="/signup" className="font-semibold text-turquoise hover:underline">Sign up</a>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

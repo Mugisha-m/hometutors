@@ -4,27 +4,15 @@ import axios from "axios";
 import PrimaryButton from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
 
-interface DocumentItem {
-  id: string;
-  title: string;
-  url: string;
-  hidden: boolean;
+interface DocumentItem { id: string; title: string; url: string; hidden: boolean; }
+interface TutorDetail {
+  id: string; displayName: string; skills: string; diploma: string;
+  certificates: string; bio: string; profilePicture?: string;
+  verified: boolean; contactPhone: string | null; contactEmail: string | null;
+  documents: DocumentItem[]; activeThisWeek: boolean;
 }
 
-interface TutorDetail {
-  id: string;
-  displayName: string;
-  skills: string;
-  diploma: string;
-  certificates: string;
-  bio: string;
-  profilePicture?: string;
-  verified: boolean;
-  contactPhone: string | null;
-  contactEmail: string | null;
-  documents: DocumentItem[];
-  activeThisWeek: boolean;
-}
+const FALLBACK = "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80";
 
 const TutorDetailPage = () => {
   const { id } = useParams();
@@ -37,97 +25,140 @@ const TutorDetailPage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("hometutors_token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    axios
-      .get(`http://localhost:4000/api/tutors/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then((response) => setTutor(response.data.data))
+    if (!token) { navigate("/login"); return; }
+    axios.get(`http://localhost:4000/api/tutors/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => setTutor(r.data.data))
       .catch(() => navigate("/login"));
   }, [id, navigate]);
 
   const requestContact = async () => {
     const token = localStorage.getItem("hometutors_token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    setRequesting(true);
-    setMessage("");
-
+    if (!token) { navigate("/login"); return; }
+    setRequesting(true); setMessage("");
     try {
-      const response = await axios.post(`http://localhost:4000/api/tutors/${id}/request-contact`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setMessage(response.data.data.message || t('tutorDetail.requestSuccess'));
+      const r = await axios.post(`http://localhost:4000/api/tutors/${id}/request-contact`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setMessage(r.data.data.message || t("tutorDetail.requestSuccess"));
       setRequested(true);
-    } catch {
-      setMessage(t('tutorDetail.requestFailure'));
-    } finally {
-      setRequesting(false);
-    }
+    } catch { setMessage(t("tutorDetail.requestFailure")); }
+    finally { setRequesting(false); }
   };
 
-  if (!tutor) {
-    return <p className="text-slate-600">{t('tutorDetail.loading')}</p>;
-  }
+  if (!tutor) return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-turquoise border-t-transparent" />
+    </div>
+  );
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[32px] bg-white p-8 shadow-lg">
-        <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-          <div className="space-y-3 max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-turquoise">{t('tutorDetail.profileLabel')}</p>
-            <h1 className="text-3xl font-bold text-charcoal">{tutor.displayName}</h1>
-            <p className="text-slate-600">{tutor.bio}</p>
-          </div>
-          <div className="space-y-3 rounded-3xl bg-slate-50 p-6 text-sm text-slate-600">
-            <p>{tutor.activeThisWeek ? t('tutorDetail.activeThisWeek') : t('tutorDetail.notActive')}</p>
-            <p>{tutor.verified ? t('tutorDetail.adminVerified') : t('tutorDetail.awaitingVerification')}</p>
-            <p>{t('tutorDetail.certificates')}: {tutor.certificates || t('tutorDetail.noCertificates')}</p>
-          </div>
-        </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl bg-slate-50 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-charcoal">{t('tutorDetail.skillsEducation')}</h2>
-            <p className="text-slate-600"><strong>{t('tutorDetail.skills')}:</strong> {tutor.skills}</p>
-            <p className="mt-3 text-slate-600"><strong>{t('tutorDetail.diploma')}:</strong> {tutor.diploma}</p>
-            <p className="mt-3 text-slate-600"><strong>{t('tutorDetail.certificates')}:</strong> {tutor.certificates}</p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xl font-semibold text-charcoal">{t('tutorDetail.contactAccess')}</h2>
-            <p className="text-slate-600">{t('tutorDetail.phone')}: <span className="font-semibold text-charcoal">{tutor.contactPhone ?? t('tutorDetail.hidden')}</span></p>
-            <p className="mt-2 text-slate-600">{t('tutorDetail.email')}: <span className="font-semibold text-charcoal">{tutor.contactEmail ?? t('tutorDetail.hidden')}</span></p>
-            <div className="mt-6">
-              <PrimaryButton label={requested ? t('tutorDetail.requested') : t('tutorDetail.requestButton')} onClick={requestContact} disabled={requesting || requested} />
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-[32px] bg-charcoal">
+        <img
+          src={tutor.profilePicture || FALLBACK}
+          alt={tutor.displayName}
+          className="h-72 w-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 flex items-end p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between w-full">
+            <div className="space-y-2">
+              <p className="text-sm uppercase tracking-widest text-turquoise">{t("tutorDetail.profileLabel")}</p>
+              <h1 className="text-4xl font-bold text-white">{tutor.displayName}</h1>
+              <div className="flex flex-wrap gap-2">
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tutor.activeThisWeek ? "bg-softgreen text-white" : "bg-slate-600 text-slate-200"}`}>
+                  {tutor.activeThisWeek ? t("tutorDetail.activeThisWeek") : t("tutorDetail.notActive")}
+                </span>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tutor.verified ? "bg-turquoise text-white" : "bg-slate-600 text-slate-200"}`}>
+                  {tutor.verified ? t("tutorDetail.adminVerified") : t("tutorDetail.awaitingVerification")}
+                </span>
+              </div>
             </div>
-            {message && <p className="mt-4 text-sm text-softgreen">{message}</p>}
+            {/* Avatar */}
+            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl border-4 border-white/20 shadow-xl">
+              <img src={tutor.profilePicture || FALLBACK} alt={tutor.displayName} className="h-full w-full object-cover" />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-[32px] bg-white p-8 shadow-sm">
-        <h2 className="mb-5 text-xl font-semibold text-charcoal">{t('tutorDetail.documents')}</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {tutor.documents.map((doc) => (
-            <div key={doc.id} className="rounded-3xl border border-slate-200 p-5">
-              <p className="font-semibold text-charcoal">{doc.title}</p>
-              <p className="mt-2 text-sm text-slate-500">{doc.hidden ? t('tutorDetail.documentHidden') : t('tutorDetail.documentAvailable')}</p>
-              {!doc.hidden && (
-                <a href={doc.url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-turquoise hover:underline">
-                  {t('tutorDetail.viewDocument')}
-                </a>
-              )}
+      <div className="grid gap-6 lg:grid-cols-3">
+
+        {/* Left — bio + skills */}
+        <div className="space-y-6 lg:col-span-2">
+          <div className="rounded-[32px] bg-white p-8 shadow-sm">
+            <h2 className="mb-4 text-xl font-semibold text-charcoal">About</h2>
+            <p className="leading-relaxed text-slate-600">{tutor.bio || "No bio provided."}</p>
+          </div>
+
+          <div className="rounded-[32px] bg-white p-8 shadow-sm">
+            <h2 className="mb-5 text-xl font-semibold text-charcoal">{t("tutorDetail.skillsEducation")}</h2>
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.skills")}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {tutor.skills.split(",").map((s) => s.trim()).filter(Boolean).map((skill) => (
+                    <span key={skill} className="rounded-full bg-turquoise/10 px-3 py-1 text-sm font-medium text-turquoise">{skill}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.diploma")}</p>
+                <p className="mt-1 text-slate-700">{tutor.diploma || "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.certificates")}</p>
+                <p className="mt-1 text-slate-700">{tutor.certificates || t("tutorDetail.noCertificates")}</p>
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Documents */}
+          {tutor.documents.length > 0 && (
+            <div className="rounded-[32px] bg-white p-8 shadow-sm">
+              <h2 className="mb-5 text-xl font-semibold text-charcoal">{t("tutorDetail.documents")}</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {tutor.documents.map((doc) => (
+                  <div key={doc.id} className="flex items-center gap-4 rounded-2xl border border-slate-200 p-4">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xl">📄</div>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-charcoal">{doc.title}</p>
+                      {doc.hidden
+                        ? <p className="text-xs text-slate-400">{t("tutorDetail.documentHidden")}</p>
+                        : <a href={doc.url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-turquoise hover:underline">{t("tutorDetail.viewDocument")}</a>
+                      }
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Right — contact */}
+        <div className="space-y-6">
+          <div className="rounded-[32px] bg-white p-8 shadow-sm">
+            <h2 className="mb-5 text-xl font-semibold text-charcoal">{t("tutorDetail.contactAccess")}</h2>
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.phone")}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.contactPhone ?? <span className="text-slate-400 font-normal">{t("tutorDetail.hidden")}</span>}</p>
+              </div>
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t("tutorDetail.email")}</p>
+                <p className="mt-1 font-semibold text-charcoal">{tutor.contactEmail ?? <span className="text-slate-400 font-normal">{t("tutorDetail.hidden")}</span>}</p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <PrimaryButton
+                label={requested ? t("tutorDetail.requested") : t("tutorDetail.requestButton")}
+                onClick={requestContact}
+                disabled={requesting || requested}
+              />
+            </div>
+            {message && <p className="mt-4 text-sm text-softgreen">{message}</p>}
+          </div>
+        </div>
+
       </div>
     </section>
   );
