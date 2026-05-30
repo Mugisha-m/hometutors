@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { config } from "../config";
 import { sendError } from "../utils";
 
 interface AuthRequest extends Request {
   user?: { id: string; role: string };
 }
-
-const jwtSecret = process.env.JWT_SECRET || "secret";
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -17,7 +16,7 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = jwt.verify(token, jwtSecret);
+    const payload = jwt.verify(token, config.jwtSecret);
     if (typeof payload === "object" && payload !== null && "id" in payload && "role" in payload) {
       req.user = { id: String(payload.id), role: String(payload.role) };
       return next();

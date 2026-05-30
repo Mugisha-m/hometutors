@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { config } from "../config";
 import { sendSuccess } from "../utils";
 
 const router = Router();
@@ -60,12 +61,12 @@ const rules: { pattern: RegExp; answer: (role?: string) => string }[] = [
   {
     pattern: /login|sign\s*in|password/i,
     answer: () =>
-      "Go to /login and enter your phone number and password. If you forgot your password, contact admin at 0799399575 or mugisharutijanaalbert@gmail.com."
+      `Go to /login and enter your phone number and password. If you forgot your password, contact admin at ${config.admin.phone}${config.admin.email ? ` or ${config.admin.email}` : ""}.`
   },
   {
     pattern: /admin.*(contact|reach|email|phone|whatsapp)/i,
     answer: () =>
-      "You can reach the admin by phone at 0799399575 or by email at mugisharutijanaalbert@gmail.com."
+      `You can reach the admin by phone at ${config.admin.phone}${config.admin.email ? ` or by email at ${config.admin.email}` : ""}.`
   },
   {
     pattern: /payment/i,

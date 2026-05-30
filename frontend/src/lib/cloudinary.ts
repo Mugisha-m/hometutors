@@ -1,5 +1,7 @@
+import { apiUrl } from "./api";
+
 export async function uploadToCloudinary(file: File, token: string): Promise<string> {
-  const signRes = await fetch("http://localhost:4000/api/upload/sign", {
+  const signRes = await fetch(apiUrl("/api/upload/sign"), {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });

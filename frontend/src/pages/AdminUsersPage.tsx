@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../lib/api";
 
 interface UserItem {
   id: string;
@@ -28,7 +28,7 @@ const AdminUsersPage = () => {
   const loadUsers = () => {
     if (!token) { setError("Login as admin to load users."); return; }
     setLoading(true);
-    axios.get("http://localhost:4000/api/admin/users", { headers: { Authorization: `Bearer ${token}` } })
+    api.get("/api/admin/users", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => setUsers(r.data.data))
       .catch(() => setError("Unable to load user list."))
       .finally(() => setLoading(false));
@@ -39,7 +39,7 @@ const AdminUsersPage = () => {
   const deleteUser = async (id: string, phone: string) => {
     if (!confirm(`Delete user ${phone}? This cannot be undone.`)) return;
     try {
-      await axios.delete(`http://localhost:4000/api/admin/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await api.delete(`/api/admin/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       setUsers(prev => prev.filter(u => u.id !== id));
     } catch {
       setError("Failed to delete user.");
@@ -48,7 +48,7 @@ const AdminUsersPage = () => {
 
   const unapproveUser = async (id: string) => {
     try {
-      await axios.post("http://localhost:4000/api/admin/unapprove-recruiter", { userId: id }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post("/api/admin/unapprove-recruiter", { userId: id }, { headers: { Authorization: `Bearer ${token}` } });
       setUsers(prev => prev.map(u => u.id === id ? { ...u, adminApproved: false } : u));
     } catch {
       setError("Failed to unapprove user.");

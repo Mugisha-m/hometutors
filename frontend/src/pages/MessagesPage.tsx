@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 import { getUserId, getUserRole } from "../lib/auth";
 import { useTranslation } from "react-i18next";
@@ -74,19 +74,19 @@ const MessagesPage = () => {
       try {
         const currentUserId = getUserId();
         const [messagesRes, notificationsRes, usersRes] = await Promise.all([
-          axios.get(
+          api.get(
             userRole === "ADMIN"
-              ? "http://localhost:4000/api/admin/messages"
-              : "http://localhost:4000/api/messages/messages",
+              ? "/api/admin/messages"
+              : "/api/messages/messages",
             { headers: { Authorization: `Bearer ${token}` } }
           ),
-          axios.get(
+          api.get(
             userRole === "ADMIN"
-              ? "http://localhost:4000/api/admin/notifications"
-              : "http://localhost:4000/api/messages/notifications",
+              ? "/api/admin/notifications"
+              : "/api/messages/notifications",
             { headers: { Authorization: `Bearer ${token}` } }
           ),
-          axios.get("http://localhost:4000/api/auth/users", {
+          api.get("/api/auth/users", {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -109,7 +109,7 @@ const MessagesPage = () => {
     if (!token) return;
 
     try {
-      await axios.put(`http://localhost:4000/api/messages/messages/${messageId}/read`, {}, {
+      await api.put(`/api/messages/messages/${messageId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages((prev) => prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg)));
@@ -123,7 +123,7 @@ const MessagesPage = () => {
     if (!token) return;
 
     try {
-      await axios.put(`http://localhost:4000/api/messages/notifications/${notificationId}/read`, {}, {
+      await api.put(`/api/messages/notifications/${notificationId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setNotifications((prev) => prev.map((notif) => (notif.id === notificationId ? { ...notif, read: true } : notif)));
@@ -137,7 +137,7 @@ const MessagesPage = () => {
     if (!token) return;
 
     try {
-      await axios.delete(`http://localhost:4000/api/admin/messages/${messageId}`, {
+      await api.delete(`/api/admin/messages/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
@@ -151,7 +151,7 @@ const MessagesPage = () => {
     if (!token) return;
 
     try {
-      const response = await axios.post("http://localhost:4000/api/messages/send-message", composeForm, {
+      const response = await api.post("/api/messages/send-message", composeForm, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const newMessage = response.data.data;

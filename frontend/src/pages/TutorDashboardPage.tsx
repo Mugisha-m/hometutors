@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 import { uploadToCloudinary } from "../lib/cloudinary";
 
@@ -56,7 +56,7 @@ const TutorDashboardPage = () => {
       return;
     }
 
-    axios.get("http://localhost:4000/api/tutors/profile/me", {
+    api.get("/api/tutors/profile/me", {
       headers: { Authorization: `Bearer ${token}` }
     }).then((response) => {
       setProfile(response.data.data);
@@ -81,7 +81,7 @@ const TutorDashboardPage = () => {
     if (!token) return;
 
     try {
-      await axios.post("http://localhost:4000/api/tutors/activity", { active: activeThisWeek }, {
+      await api.post("/api/tutors/activity", { active: activeThisWeek }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       showToast("Activity status updated!");
@@ -91,7 +91,7 @@ const TutorDashboardPage = () => {
     }
 
     try {
-      const response = await axios.get("http://localhost:4000/api/tutors/profile/me", {
+      const response = await api.get("/api/tutors/profile/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(response.data.data);
@@ -105,11 +105,11 @@ const TutorDashboardPage = () => {
     const token = localStorage.getItem("hometutors_token");
     if (!token) return;
     try {
-      await axios.put("http://localhost:4000/api/tutors/profile", formData, {
+      await api.put("/api/tutors/profile", formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Re-fetch full profile so documents/weeklyActivities are not lost
-      const refreshed = await axios.get("http://localhost:4000/api/tutors/profile/me", {
+      const refreshed = await api.get("/api/tutors/profile/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(refreshed.data.data);
@@ -129,11 +129,11 @@ const TutorDashboardPage = () => {
     }
 
     try {
-      await axios.post("http://localhost:4000/api/tutors/documents", documentForm, {
+      await api.post("/api/tutors/documents", documentForm, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDocumentForm({ title: "", url: "", containsContact: false });
-      const response = await axios.get("http://localhost:4000/api/tutors/profile/me", {
+      const response = await api.get("/api/tutors/profile/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(response.data.data);
@@ -151,7 +151,7 @@ const TutorDashboardPage = () => {
     setUploadingPhoto(true);
     try {
       const url = await uploadToCloudinary(file, token);
-      await axios.put("http://localhost:4000/api/tutors/profile", { ...formData, profilePicture: url }, {
+      await api.put("/api/tutors/profile", { ...formData, profilePicture: url }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(prev => prev ? { ...prev, profilePicture: url } : prev);

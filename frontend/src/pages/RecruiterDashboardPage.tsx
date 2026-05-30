@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 
 interface RecruiterProfile {
@@ -42,10 +42,10 @@ const RecruiterDashboardPage = () => {
     const loadData = async () => {
       try {
         const [profileRes, paymentsRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/recruiters/profile", {
+          api.get("/api/recruiters/profile", {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          axios.get("http://localhost:4000/api/recruiters/payments", {
+          api.get("/api/recruiters/payments", {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -68,7 +68,7 @@ const RecruiterDashboardPage = () => {
     const token = localStorage.getItem("hometutors_token");
     if (!token) return;
     try {
-      const response = await axios.put("http://localhost:4000/api/recruiters/profile", formData, {
+      const response = await api.put("/api/recruiters/profile", formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(response.data.data);
@@ -84,7 +84,7 @@ const RecruiterDashboardPage = () => {
     if (!token) return;
 
     try {
-      const response = await axios.post("http://localhost:4000/api/recruiters/payments", paymentForm, {
+      const response = await api.post("/api/recruiters/payments", paymentForm, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPayments(prev => [response.data.data, ...prev]);

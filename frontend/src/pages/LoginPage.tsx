@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +17,7 @@ const LoginPage = () => {
     e.preventDefault();
     setSubmitting(true); setError("");
     try {
-      const res = await axios.post("http://localhost:4000/api/auth/login", form);
+      const res = await api.post("/api/auth/login", form);
       localStorage.setItem("hometutors_token", res.data.data.token);
       window.dispatchEvent(new Event("authChange"));
       const role = res.data.data.user.role;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 
 interface PendingRecruiter {
@@ -43,9 +43,9 @@ const AdminApprovalsPage = () => {
   const load = async () => {
     try {
       const [recruitersRes, requestsRes, tutorsRes] = await Promise.all([
-        axios.get("http://localhost:4000/api/recruiters/pending-requests", { headers: headers() }),
-        axios.get("http://localhost:4000/api/admin/contact-requests", { headers: headers() }),
-        axios.get("http://localhost:4000/api/admin/unverified-tutors", { headers: headers() }),
+        api.get("/api/recruiters/pending-requests", { headers: headers() }),
+        api.get("/api/admin/contact-requests", { headers: headers() }),
+        api.get("/api/admin/unverified-tutors", { headers: headers() }),
       ]);
 
       setPendingRecruiters(recruitersRes.data.data);
@@ -76,7 +76,7 @@ const AdminApprovalsPage = () => {
 
   const approveRecruiter = async (recruiterId: string) => {
     try {
-      await axios.post("http://localhost:4000/api/admin/approve-recruiter", { recruiterId }, { headers: headers() });
+      await api.post("/api/admin/approve-recruiter", { recruiterId }, { headers: headers() });
       setPendingRecruiters(prev => prev.filter(r => r.id !== recruiterId));
       setFeedback("Recruiter approved.");
     } catch { setFeedback("Failed to approve recruiter."); }
@@ -84,9 +84,9 @@ const AdminApprovalsPage = () => {
 
   const approveContact = async (request: ContactRequest) => {
     try {
-      await axios.post("http://localhost:4000/api/admin/approve-contact", { recruiterUserId: request.recruiterUserId }, { headers: headers() });
+      await api.post("/api/admin/approve-contact", { recruiterUserId: request.recruiterUserId }, { headers: headers() });
       // Also delete the notification
-      await axios.delete(`http://localhost:4000/api/admin/notifications/${request.id}`, { headers: headers() });
+      await api.delete(`/api/admin/notifications/${request.id}`, { headers: headers() });
       setContactRequests(prev => prev.filter(r => r.id !== request.id));
       setFeedback("Contact access approved.");
     } catch { setFeedback("Failed to approve contact access."); }
@@ -94,7 +94,7 @@ const AdminApprovalsPage = () => {
 
   const verifyTutor = async (tutorId: string) => {
     try {
-      await axios.post("http://localhost:4000/api/admin/verify-tutor", { tutorId }, { headers: headers() });
+      await api.post("/api/admin/verify-tutor", { tutorId }, { headers: headers() });
       setUnverifiedTutors(prev => prev.filter(t => t.id !== tutorId));
       setFeedback("Tutor verified.");
     } catch { setFeedback("Failed to verify tutor."); }

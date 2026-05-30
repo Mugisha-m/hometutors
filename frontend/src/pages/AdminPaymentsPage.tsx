@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../lib/api";
 
 interface AdminPayment {
   id: string;
@@ -27,7 +27,7 @@ const AdminPaymentsPage = () => {
   useEffect(() => {
     if (!token) { setError("Login as admin to access payments."); return; }
     setLoading(true);
-    axios.get("http://localhost:4000/api/admin/payments", { headers: { Authorization: `Bearer ${token}` } })
+    api.get("/api/admin/payments", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => setPayments(r.data.data))
       .catch(() => setError("Unable to load payments."))
       .finally(() => setLoading(false));
@@ -35,7 +35,7 @@ const AdminPaymentsPage = () => {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const r = await axios.patch(`http://localhost:4000/api/admin/payments/${id}/status`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+      const r = await api.patch(`/api/admin/payments/${id}/status`, { status }, { headers: { Authorization: `Bearer ${token}` } });
       setPayments(prev => prev.map(p => p.id === id ? { ...p, status: r.data.data.status } : p));
     } catch {
       setError("Failed to update payment status.");

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
 
@@ -27,7 +27,7 @@ const TutorDetailPage = () => {
   useEffect(() => {
     const token = localStorage.getItem("hometutors_token");
     if (!token) { navigate("/login"); return; }
-    axios.get(`http://localhost:4000/api/tutors/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+    api.get(`/api/tutors/${id}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => setTutor(r.data.data))
       .catch(() => navigate("/login"));
   }, [id, navigate]);
@@ -37,7 +37,7 @@ const TutorDetailPage = () => {
     if (!token) { navigate("/login"); return; }
     setRequesting(true); setMessage("");
     try {
-      const r = await axios.post(`http://localhost:4000/api/tutors/${id}/request-contact`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const r = await api.post(`/api/tutors/${id}/request-contact`, {}, { headers: { Authorization: `Bearer ${token}` } });
       setMessage(r.data.data.message || t("tutorDetail.requestSuccess"));
       setRequested(true);
     } catch { setMessage(t("tutorDetail.requestFailure")); }

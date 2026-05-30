@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import PrimaryButton from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
 
@@ -40,7 +40,7 @@ const TutorListPage = () => {
       if (locationQuery.trim()) params.location = locationQuery.trim();
       if (activeOnly) params.active = true;
       if (verifiedOnly) params.verified = true;
-      const response = await axios.get("http://localhost:4000/api/tutors", { params });
+      const response = await api.get("/api/tutors", { params });
       setTutors(response.data.data);
     } catch {
       setError(t("tutorList.error"));

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api";
 import { useTranslation } from "react-i18next";
 
 interface Stats {
@@ -36,7 +36,7 @@ const AdminDashboardPage = () => {
     const token = localStorage.getItem("hometutors_token");
     if (!token) { setError(t("admin.notLoggedIn")); return; }
     setLoading(true);
-    axios.get("http://localhost:4000/api/admin/dashboard", { headers: { Authorization: `Bearer ${token}` } })
+    api.get("/api/admin/dashboard", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => setStats(r.data.data))
       .catch(() => setError(t("admin.dashboardError")))
       .finally(() => setLoading(false));

@@ -1,13 +1,13 @@
 import { Router } from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
+import { config } from "../config";
 import prisma from "../prisma";
 import { sendError, sendSuccess } from "../utils";
 import { authenticate } from "../middleware/auth";
 
 const router = Router();
-const jwtSecret = process.env.JWT_SECRET || "secret";
 
 const signupSchema = z.object({
   phone: z.string().min(7),
@@ -61,16 +61,9 @@ router.post("/signup", async (req, res) => {
     }
   });
 
-  const token = jwt.sign({ id: user.id, role: user.role }, jwtSecret, { expiresIn: "7d" });
+  const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecret, { expiresIn: "7d" });
   return sendSuccess(res, { token, user: { id: user.id, phone: user.phone, role: user.role } });
 });
-
-const adminCredentials = {
-  phone: "0799399575",
-  password: "Aa-2507832829;",
-  email: "mugisharutijanaalbert@gmail.com",
-  userName: "Teacer"
-};
 
 router.post("/login", async (req, res) => {
   const parseResult = loginSchema.safeParse(req.body);
@@ -78,40 +71,6 @@ router.post("/login", async (req, res) => {
     return sendError(res, parseResult.error.message);
   }
   const { phone, password } = parseResult.data;
-
-  if (phone === adminCredentials.phone) {
-    let adminUser = await prisma.user.findUnique({ where: { phone } });
-    if (!adminUser) {
-      const hashedPassword = await bcrypt.hash(adminCredentials.password, 10);
-      adminUser = await prisma.user.create({
-        data: {
-          phone: adminCredentials.phone,
-          email: adminCredentials.email,
-          password: hashedPassword,
-          role: "ADMIN",
-          adminApproved: true
-        }
-      });
-    }
-
-    const match = await bcrypt.compare(password, adminUser.password);
-    if (!match) {
-      return sendError(res, "Invalid credentials", 401);
-    }
-
-    const token = jwt.sign({ id: adminUser.id, role: adminUser.role }, jwtSecret, { expiresIn: "7d" });
-    return sendSuccess(res, {
-      token,
-      user: {
-        id: adminUser.id,
-        phone: adminUser.phone,
-        email: adminUser.email,
-        role: adminUser.role,
-        adminApproved: adminUser.adminApproved,
-        name: adminCredentials.userName
-      }
-    });
-  }
 
   const user = await prisma.user.findUnique({ where: { phone } });
   if (!user) {
@@ -123,7 +82,7 @@ router.post("/login", async (req, res) => {
     return sendError(res, "Invalid credentials", 401);
   }
 
-  const token = jwt.sign({ id: user.id, role: user.role }, jwtSecret, { expiresIn: "7d" });
+  const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecret, { expiresIn: "7d" });
   return sendSuccess(res, { token, user: { id: user.id, phone: user.phone, role: user.role, adminApproved: user.adminApproved } });
 });
 
@@ -135,7 +94,7 @@ router.get("/me", async (req, res) => {
 
   try {
     const token = authHeader.split(" ")[1];
-    const payload = jwt.verify(token, jwtSecret) as { id: string };
+    const payload = jwt.verify(token, config.jwtSecret) as { id: string };
     const user = await prisma.user.findUnique({
       where: { id: payload.id },
       select: {

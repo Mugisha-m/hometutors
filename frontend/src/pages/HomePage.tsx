@@ -68,8 +68,8 @@ const HomePage = () => {
       {/* Stats bar */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
-          { value: "50+", label: "Verified Tutors" },
-          { value: "100%", label: "Admin Oversight" },
+          { value: "-", label: "Verified Tutors" },
+          { value: "-", label: "Admin Oversight" },
           { value: "24/7", label: "Platform Access" },
           { value: "🔒", label: "Protected Contacts" },
         ].map((stat) => (
