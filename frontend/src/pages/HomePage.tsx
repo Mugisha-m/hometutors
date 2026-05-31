@@ -4,14 +4,14 @@ import PrimaryButton from "../components/PrimaryButton";
 
 const HERO_IMAGE = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80";
 const TUTOR_IMAGES = [
-  "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+  "https://images.unsplash.com/photo-1607746882042-94463fe10e?auto=format&fit=crop&w=400&q=80",
+  "https://images.unsplash.com/photo-1531746020798-e6953c6e04?auto=format&fit=crop&w=400&q=80",
+  "https://images.unsplash.com/photo-1544717305-2782549b51?auto=format&fit=crop&w=400&q=80",
 ];
 
 const steps = [
   { number: "01", title: "Tutors Sign Up", desc: "Tutors register, complete their profile with skills, diploma, and bio, then set weekly availability." },
-  { number: "02", title: "Recruiters Register", desc: "Recruiters sign up with their company name and wait for admin approval to access contact details." },
+  { number: "02", title: "Recruiters Register", desc: "Recruiters sign up with their company name, and wait for admin approval to access contact details." },
   { number: "03", title: "Admin Approves", desc: "Admin reviews recruiter accounts and grants access to tutor contact information and documents." },
   { number: "04", title: "Connect & Hire", desc: "Approved recruiters browse verified tutors, view full profiles, and reach out directly." },
 ];
@@ -60,7 +60,7 @@ const HomePage = () => {
             />
           ))}
           <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/40 bg-turquoise/80 text-xs font-bold text-white shadow-lg" style={{ marginLeft: "-12px" }}>
-            +50
+            
           </div>
         </div>
       </div>
