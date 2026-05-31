@@ -37,3 +37,5 @@ This repository contains the HomeTutors application with two separate workspaces
 - Tutor contact details remain hidden until admin confirms recruiter access.
 - Recruiter users must sign up and be approved by admin for sensitive data.
 - The app is designed around a single primary admin with monitoring and messaging capabilities.
+
+-we used claudinary for image optimization
