@@ -1,24 +1,26 @@
 import { Router } from "express";
 import { config } from "../config";
-import { sendSuccess } from "../utils";
+import { sendError, sendSuccess } from "../utils";
 
 const router = Router();
+
+const MAX_MESSAGE_LENGTH = 1000;
 
 const rules: { pattern: RegExp; answer: (role?: string) => string }[] = [
   {
     pattern: /sign\s*up|register|create.*(account|profile)/i,
     answer: () =>
-      "To sign up, go to /signup and choose your role — Tutor or Recruiter. Fill in your phone, email, password, and name, then submit."
+      "To sign up, go to /signup and choose your role - Tutor or Recruiter. Fill in your phone, email, password, and name, then submit."
   },
   {
     pattern: /tutor.*(onboard|start|begin|steps|how)/i,
     answer: () =>
-      "As a tutor: sign up → your profile is created automatically → fill in your skills, bio, and diploma from your dashboard → upload documents → update your weekly activity status each week."
+      "As a tutor: sign up, your profile is created automatically, fill in your skills, bio, and diploma from your dashboard, upload documents, then update your weekly activity status each week."
   },
   {
     pattern: /recruiter.*(onboard|start|begin|steps|how)/i,
     answer: () =>
-      "As a recruiter: sign up → wait for admin approval → once approved you can browse tutors and view their contact details."
+      "As a recruiter: sign up, wait for admin approval, then once approved you can browse tutors and view their contact details."
   },
   {
     pattern: /approv|pending|waiting|status/i,
@@ -51,7 +53,7 @@ const rules: { pattern: RegExp; answer: (role?: string) => string }[] = [
   {
     pattern: /document|upload|certificate|diploma/i,
     answer: () =>
-      "Tutors can upload documents (certificates, diplomas, IDs) from their dashboard. Provide a title and a URL to the document. Mark it if it contains contact information — those will be hidden from unapproved recruiters."
+      "Tutors can upload documents, certificates, diplomas, and IDs from their dashboard. Provide a title and a URL to the document. Mark it if it contains contact information - those will be hidden from unapproved recruiters."
   },
   {
     pattern: /edit.*(profile|info|bio|skill)|update.*(profile|info|bio|skill)/i,
@@ -98,19 +100,88 @@ const rules: { pattern: RegExp; answer: (role?: string) => string }[] = [
 ];
 
 const fallback =
-  "I can only help with HomeTutors — tutor profiles, recruiter approval, contact access, account questions, or reaching admin. Could you rephrase your question?";
+  "I can only help with HomeTutors - tutor profiles, recruiter approval, contact access, account questions, or reaching admin. Could you rephrase your question?";
 
-router.post("/", (req, res) => {
-  const { message, role } = req.body as { message?: string; role?: string };
-  if (!message?.trim()) return sendSuccess(res, { reply: fallback });
-
+const getRuleReply = (message: string, role?: string) => {
   for (const rule of rules) {
     if (rule.pattern.test(message)) {
-      return sendSuccess(res, { reply: rule.answer(role) });
+      return rule.answer(role);
     }
   }
 
-  return sendSuccess(res, { reply: fallback });
+  return fallback;
+};
+
+const getGeminiReply = async (message: string, role?: string) => {
+  if (!config.gemini.apiKey) return null;
+
+  const prompt = [
+    "You are the HomeTutors assistant.",
+    "Only answer questions about the HomeTutors platform: signing up, tutor profiles, recruiter approval, contact access, documents, weekly activity, messages, payments, verification, and contacting admin.",
+    "If the user asks about anything unrelated, politely say you can only help with HomeTutors.",
+    "Keep answers concise and practical.",
+    `Admin phone: ${config.admin.phone}.`,
+    config.admin.email ? `Admin email: ${config.admin.email}.` : "",
+    role ? `Current user role: ${role}.` : "",
+    `User message: ${message}`
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+      config.gemini.model
+    )}:generateContent?key=${encodeURIComponent(config.gemini.apiKey)}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.3,
+          maxOutputTokens: 250
+        }
+      })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Gemini request failed with status ${response.status}`);
+  }
+
+  const data = (await response.json()) as {
+    candidates?: Array<{
+      content?: {
+        parts?: Array<{ text?: string }>;
+      };
+    }>;
+  };
+
+  const reply = data.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text)
+    .filter(Boolean)
+    .join("\n")
+    .trim();
+
+  return reply || null;
+};
+
+router.post("/", async (req, res) => {
+  const { message, role } = req.body as { message?: string; role?: string };
+  const trimmedMessage = message?.trim();
+
+  if (!trimmedMessage) return sendError(res, "Message is required.");
+  if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+    return sendError(res, `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer.`);
+  }
+
+  try {
+    const geminiReply = await getGeminiReply(trimmedMessage, role);
+    return sendSuccess(res, { reply: geminiReply || getRuleReply(trimmedMessage, role) });
+  } catch (error) {
+    console.error("Gemini chat error:", error);
+    return sendSuccess(res, { reply: getRuleReply(trimmedMessage, role) });
+  }
 });
 
 export default router;
