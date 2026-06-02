@@ -58,7 +58,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="min-w-14 text-slate-500">Email</span>
-                <a href="mailto:info@hometutors.rw" className="break-all transition-colors hover:text-turquoise">info@hometutors.rw</a>
+                <a href="mailto:mugisharutijanaalbert@gmail.com" className="break-all transition-colors hover:text-turquoise">mugisharutijanaalbert@gmail.com</a>
               </li>
               <li className="flex items-start gap-2">
                 <span className="min-w-14 text-slate-500">Base</span>
