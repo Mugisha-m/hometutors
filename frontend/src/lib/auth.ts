@@ -29,5 +29,4 @@ export const isAuthenticated = () => !!getToken();
 export const logout = () => {
   localStorage.removeItem("hometutors_token");
   window.dispatchEvent(new Event("authChange"));
-  window.location.href = "/login";
 };

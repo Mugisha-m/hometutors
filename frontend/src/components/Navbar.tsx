@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { getToken, getUserRole, logout } from "../lib/auth";
@@ -7,6 +7,7 @@ import { getToken, getUserRole, logout } from "../lib/auth";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [token, setToken] = useState(getToken());
   const [role, setRole] = useState(getUserRole());
 
@@ -27,6 +28,11 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    navigate("/login", { replace: true });
+  };
 
   const links = [
     { label: t('nav.home'), to: "/" },
@@ -88,7 +94,7 @@ const Navbar = () => {
                   {dashboardLabel}
                 </NavLink>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="rounded-full bg-crimson px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-600"
                 >
                   {t('nav.logout')}

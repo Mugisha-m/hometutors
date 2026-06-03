@@ -84,6 +84,8 @@ function App() {
             />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/sigup" element={<Navigate to="/signup" replace />} />
+            <Route path="/tutor" element={<Navigate to="/tutors" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
